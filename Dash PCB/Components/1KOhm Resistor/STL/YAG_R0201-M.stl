@@ -1,0 +1,254 @@
+solid YAG_R0201-M
+facet normal 1 0 0
+  outer loop
+    vertex 4.5 -5.5 1
+    vertex 4.5 5.5 9
+    vertex 4.5 -5.5 9
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 4.5 -5.5 1
+    vertex 4.5 5.5 1
+    vertex 4.5 5.5 9
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -4.5 5.5 1
+    vertex -4.5 -5.5 9
+    vertex -4.5 5.5 9
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -4.5 5.5 1
+    vertex -4.5 -5.5 1
+    vertex -4.5 -5.5 9
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -4.5 -5.5 1
+    vertex 4.5 -5.5 9
+    vertex -4.5 -5.5 9
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -4.5 -5.5 1
+    vertex 4.5 -5.5 1
+    vertex 4.5 -5.5 9
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 4.5 5.5 1
+    vertex -4.5 5.5 9
+    vertex 4.5 5.5 9
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 4.5 5.5 1
+    vertex -4.5 5.5 1
+    vertex -4.5 5.5 9
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 4.5 -5.5 1
+    vertex -4.5 5.5 1
+    vertex 4.5 5.5 1
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 4.5 -5.5 1
+    vertex -4.5 -5.5 1
+    vertex -4.5 5.5 1
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 4.5 -5.5 9
+    vertex 4.5 5.5 9
+    vertex -4.5 5.5 9
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 4.5 -5.5 9
+    vertex -4.5 5.5 9
+    vertex -4.5 -5.5 9
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 12.5 -6.5 0
+    vertex 12.5 6.5 10
+    vertex 12.5 -6.5 10
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex 12.5 -6.5 0
+    vertex 12.5 6.5 0
+    vertex 12.5 6.5 10
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 4.5 6.5 0
+    vertex 4.5 -6.5 10
+    vertex 4.5 6.5 10
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 4.5 6.5 0
+    vertex 4.5 -6.5 0
+    vertex 4.5 -6.5 10
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 4.5 -6.5 0
+    vertex 12.5 -6.5 10
+    vertex 4.5 -6.5 10
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex 4.5 -6.5 0
+    vertex 12.5 -6.5 0
+    vertex 12.5 -6.5 10
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 12.5 6.5 0
+    vertex 4.5 6.5 10
+    vertex 12.5 6.5 10
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex 12.5 6.5 0
+    vertex 4.5 6.5 0
+    vertex 4.5 6.5 10
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 12.5 -6.5 0
+    vertex 4.5 6.5 0
+    vertex 12.5 6.5 0
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex 12.5 -6.5 0
+    vertex 4.5 -6.5 0
+    vertex 4.5 6.5 0
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 12.5 -6.5 10
+    vertex 12.5 6.5 10
+    vertex 4.5 6.5 10
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 12.5 -6.5 10
+    vertex 4.5 6.5 10
+    vertex 4.5 -6.5 10
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -12.5 6.5 0
+    vertex -12.5 -6.5 10
+    vertex -12.5 6.5 10
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex -12.5 6.5 0
+    vertex -12.5 -6.5 0
+    vertex -12.5 -6.5 10
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -4.5 -6.5 0
+    vertex -4.5 6.5 10
+    vertex -4.5 -6.5 10
+  endloop
+endfacet
+facet normal 1 0 0
+  outer loop
+    vertex -4.5 -6.5 0
+    vertex -4.5 6.5 0
+    vertex -4.5 6.5 10
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -4.5 6.5 0
+    vertex -12.5 6.5 10
+    vertex -4.5 6.5 10
+  endloop
+endfacet
+facet normal 0 1 0
+  outer loop
+    vertex -4.5 6.5 0
+    vertex -12.5 6.5 0
+    vertex -12.5 6.5 10
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -12.5 -6.5 0
+    vertex -4.5 -6.5 10
+    vertex -12.5 -6.5 10
+  endloop
+endfacet
+facet normal 0 -1 0
+  outer loop
+    vertex -12.5 -6.5 0
+    vertex -4.5 -6.5 0
+    vertex -4.5 -6.5 10
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -12.5 6.5 0
+    vertex -4.5 -6.5 0
+    vertex -12.5 -6.5 0
+  endloop
+endfacet
+facet normal 0 0 -1
+  outer loop
+    vertex -12.5 6.5 0
+    vertex -4.5 6.5 0
+    vertex -4.5 -6.5 0
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -12.5 6.5 10
+    vertex -12.5 -6.5 10
+    vertex -4.5 -6.5 10
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex -12.5 6.5 10
+    vertex -4.5 -6.5 10
+    vertex -4.5 6.5 10
+  endloop
+endfacet
+endsolid YAG_R0201-M
