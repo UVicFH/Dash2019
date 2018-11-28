@@ -157,23 +157,6 @@ GenerateClassCluster=0
 DocumentUniqueId=ROVGEKMH
 
 [Document8]
-DocumentPath=Components\15uF cap\15uF-Cap.SchLib
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=XKNAXBHG
-
-[Document9]
 DocumentPath=Components\Diode\AltiumDesigner\6TQ045S Diode.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -190,7 +173,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=XJXOOPJQ
 
-[Document10]
+[Document9]
 DocumentPath=Candunio.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -207,7 +190,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=WBWXYGIB
 
-[Document11]
+[Document10]
 DocumentPath=DashNas.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -224,7 +207,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=DEMSEDNV
 
-[Document12]
+[Document11]
 DocumentPath=Components\Regulator\AltiumDesigner\Regulator.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -241,7 +224,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document13]
+[Document12]
 DocumentPath=Components\Regulator\AltiumDesigner\Regulator.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -258,7 +241,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=AJORGKHY
 
-[Document14]
+[Document13]
 DocumentPath=Components\0.01uF Cap\10000pF-Cap.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -275,24 +258,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=CQRURACK
 
-[Document15]
-DocumentPath=Components\15uF Cap\15uF-Cap.PcbLib
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document16]
+[Document14]
 DocumentPath=Components\180uF Cap\180uF-Cap.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -309,7 +275,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document17]
+[Document15]
 DocumentPath=Components\Diode\AltiumDesigner\Diode.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -326,7 +292,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document18]
+[Document16]
 DocumentPath=Canduino+Callum.PcbDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -343,7 +309,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=RTRGVVPL
 
-[Document19]
+[Document17]
 DocumentPath=DO-220AA.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -360,7 +326,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=KELSJHML
 
-[Document20]
+[Document18]
 DocumentPath=..\..\PDU2019\PowerDistLib.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -377,7 +343,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document21]
+[Document19]
 DocumentPath=Dash_PCB_Nas.IntLib
 AnnotationEnabled=1
 AnnotateStartValue=1
