@@ -1,0 +1,4 @@
+Removed Pin From Net: NetName=ADC1 Pin=P3-1
+Removed Pin From Net: NetName=+5V_LED Pin=P3-19
+Added Pin To Net: NetName=+5V_LED Pin=P3-1
+Added Pin To Net: NetName=ADC1 Pin=P3-19
