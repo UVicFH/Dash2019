@@ -1,4 +1,0 @@
-Removed Pin From Net: NetName=+5V Pin=P3-20
-Added Pin To Net: NetName=NetP3_20 Pin=P3-20
-Added Pin To Net: NetName=NetP3_20 Pin=R5-2
-Added Net: Name=NetP3_20

@@ -1,3 +1,0 @@
-Remove Pin=P2-2 From Net=CANH
-Remove Pin=P2-3 From Net=CANL
-Change Component Footprint: Designator=D4 Old Footprint=VISH-DO-214AC-SMA-2_M New Footprint=VISH-DO-214AC-SMA-2_M
