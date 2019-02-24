@@ -1,7 +1,11 @@
 #define INTCAN_PIN 2
 const int SPI_CS_PIN = 9;
 #define CAN_DASH_OUT_ID 0x90   // Dash to controller
-#define CAN_DASH_IN_ID 0x91    // Dash ID
+#define STATUS_ID 0x81    // IMD status, AMS status
+#define RTD_ID 0x80    // rtds from main controller (only bit 3)
+#define RPM_CHARGE_ID 0x257
+#define TEMP_ID 0x258 // coolant temp in here
+
 
 #define LED_COUNT 60
 
@@ -33,7 +37,7 @@ const int SPI_CS_PIN = 9;
 
 #define LED_PIN 3
 
-//Inputs from controller (ID 0x91)
+//Inputs from pdu (ID 0x81)
 
 #define IMD_STAT_BYTE 0
 #define IMD_STAT_BIT 0
@@ -41,16 +45,20 @@ const int SPI_CS_PIN = 9;
 #define AMS_STAT_BYTE 0
 #define AMS_STAT_BIT 1
 
+//Inputs from controller (ID 0x80)
 #define RTDS_BYTE 0
-#define RTDS_BIT 2
+#define RTDS_BIT 3
 #define RTDS_PIN 5
 
-#define TEMP_BYTE 0
-#define TEMP_BIT 3
+//Inputs from controller  (ID 0x257)
+#define RPM_BYTE 2 
+#define RPM_LEN 16 //16 bits (2 bytes) 
+#define CHARGE_BYTE 6
+#define CHARGE_LEN 8 //8 bits (1 byte)
 
-#define CHARGE_BYTE 1
-
-#define TACH_BYTE 2
+//Inputs from controller  (ID 0x258)
+#define TEMP_BYTE 7
+#define TEMP_LEN 8 //8 bits (1 byte)
 
 #define MASK_1 0x1
 #define BIT_2_MASK 0x2
