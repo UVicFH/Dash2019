@@ -230,6 +230,7 @@ void loop(){
     
 }
 
+// Source on this code is unknown. Originally implemented in LED Tachometer. 
 long HSBtoRGB(float _hue, float _sat, float _brightness) {
   float red = 0.0;
   float green = 0.0;
