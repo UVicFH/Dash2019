@@ -154,7 +154,7 @@ void loop(){
     digitalWrite(engineLedPin, engineRunning);
     
     // Set the motor button light
-    digitalWrite(motorLedPin, motorRunning);
+    digitalWrite(motorLedPin, readyToDrive);
     
     // Set the buzzer to the inputted value
     digitalWrite(buzzerPin, buzzerOn);
@@ -171,18 +171,18 @@ void loop(){
     else if(coolantTemperature > coolantHot)
       leds.setPixelColor(coolantTemperatureLed, leds.Color(255, 0, 0));
     else
-      leds.setPixelColor(coolantTemperatureLed, leds.Color(0));
+      leds.setPixelColor(coolantTemperatureLed, leds.Color(0, 0, 0));
     
     // Determine the correct color for the state of charge bar
-    float stateofChargeColor = stateofCharge/100.0*75+25.0;
+    float stateOfChargeColor = stateOfCharge/100.0*75+25.0;
     
     // Loop through the bar's LEDs and set their color as required
     int i;
-    for(i = 0; i < stateofChargeLength; i++){
-      if(i < stateofCharge/100.0*stateofChargeLength)
-        leds.setPixelColor(i + stateofChargeStart, HSBtoRGB(stateofChargeColor,1,1))
+    for(i = 0; i < stateOfChargeLength; i++){
+      if(i < stateOfCharge/100.0*stateOfChargeLength)
+        leds.setPixelColor(i + stateOfChargeStart, HSBtoRGB(stateOfChargeColor,1,1));
       else
-        leds.setPixelColor(i + stateofChargeStart, 0)
+        leds.setPixelColor(i + stateOfChargeStart, 0);
     }
     
     // Determine the correct color for the state of RPM bar
@@ -196,13 +196,14 @@ void loop(){
       flashMode = flashDelay;
     
     // Loop through the bar's LEDs and set their color as required
-    int i;
-    for(i = 0; i < rpmLength; i++){
-      if(i < rpmRatio*rpmLength)
+    int j;
+    for(j = 0; j < rpmLength; j++){
+      if(j < rpmRatio*rpmLength){
         int flash = (flashMode / flashDelay) % 2;
-        leds.setPixelColor(i + rpmStart, HSBtoRGB(rpmColor*flash,1,1))
+        leds.setPixelColor(j + rpmStart, HSBtoRGB(rpmColor*flash,1,1));
+      }
       else
-        leds.setPixelColor(i + rpmStart, 0)
+        leds.setPixelColor(j + rpmStart, 0);
     }
     
     // Update the led changes just made
@@ -230,7 +231,6 @@ void loop(){
     
 }
 
-// Source on this code is unknown. Originally implemented in LED Tachometer. 
 long HSBtoRGB(float _hue, float _sat, float _brightness) {
   float red = 0.0;
   float green = 0.0;

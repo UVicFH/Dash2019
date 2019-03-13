@@ -37,3 +37,5 @@ It also outputs the physical inputs over CAN in the following format at 5Hz:
 | Engine Start       | 1     | 0/1         |
 | Motor Start        | 1     | 0/1         |
 | CPBRB Status       | 1     | 0/1         |
+
+Please make sure the following library is installed before compiling: https://github.com/Seeed-Studio/CAN_BUS_Shield

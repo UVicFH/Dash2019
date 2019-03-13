@@ -30,23 +30,23 @@ Date:   12-Mar-2019
 #define cockpitShutdownPin 10
 
 // Physical pin debouncing delay
-#define debounceDelay 50;
+#define debounceDelay 50
 
 // LED Specifications
 #define ledCount 60
 #define flashDelay 50
 
-#define maxRpm 12300.0;
-#define flashRpm 11500.0;
-#define coolantCold 165;
-#define coolantHot 190;
+#define maxRpm 12300.0
+#define flashRpm 11500.0
+#define coolantCold 165
+#define coolantHot 190
 
 #define amsLed 0
 #define imdLed 1
-#define coolantTemperatureLed 2;
+#define coolantTemperatureLed 2
 
-#define stateofChargeStart 3.0;
-#define stateofChargeLength 10.0;
+#define stateOfChargeStart 3.0
+#define stateOfChargeLength 10.0
 
-#define rpmStart 3.0;
-#define rpmLength 15.0;
+#define rpmStart 3.0
+#define rpmLength 15.0
