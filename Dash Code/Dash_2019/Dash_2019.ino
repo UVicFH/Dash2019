@@ -1,4 +1,4 @@
-/* 
+  /* 
 
 Date:   12-Mar-2019
 Author: Chad McColm
@@ -30,22 +30,22 @@ float coolantTemperature;
 int stateOfCharge;
 bool engineRunning;
 bool readyToDrive;
-bool buzzerOn;
+bool buzzerOn = 0;
 bool amsStatus;
 bool imdStatus;
 int mode;
 int tractionControl;
-bool engineStart;
-bool motorStart;
-bool cockpitShutdown;
+bool engineStart = 1;
+bool motorStart = 1;
+bool cockpitShutdown = 1;
 
 // Global variables for debouncing inputs
-unsigned long lastEngineStart;
-unsigned long lastMotorStart;
-unsigned long lastCockpitShutdown;
-int lastEngineStartReading;
-int lastMotorStartReading;
-int lastCockpitShutdownReading;
+bool lastEngineStartReading;
+bool lastMotorStartReading;
+bool lastCockpitShutdownReading;
+unsigned long lastEngineStartReadingTime;
+unsigned long lastMotorStartReadingTime;
+unsigned long lastCockpitShutdownReadingTime;
 
 // CAN frequency tracking
 unsigned long canLastSent;
@@ -84,6 +84,9 @@ void setup()
   CAN.init_Filt(3, 0, canInputId);
   CAN.init_Filt(4, 0, canInputId);
   CAN.init_Filt(5, 0, canInputId);
+
+  pinMode(engineStartPin, INPUT_PULLUP);
+  pinMode(motorStartPin, INPUT_PULLUP);
   
 }
 
@@ -110,55 +113,59 @@ void loop(){
         rpm = incomingMessageData[0] << 8 || incomingMessageData[1];
         coolantTemperature = (incomingMessageData[2] << 8 || incomingMessageData[3])/10.0;
         stateOfCharge = incomingMessageData[4];
-        engineRunning = incomingMessageData[5] >> 4;
-        readyToDrive = incomingMessageData[5] && 0b1111;
-        buzzerOn = incomingMessageData[6];
-        amsStatus = incomingMessageData[7] >> 4;
-        imdStatus = incomingMessageData[7] && 0b1111;
+        engineRunning = incomingMessageData[5] & 0b00000001;
+        readyToDrive = incomingMessageData[5] & 0b00000010;
+        buzzerOn = incomingMessageData[5] & 0b00000100;
+        amsStatus = incomingMessageData[5] & 0b00001000;
+        imdStatus = incomingMessageData[5] & 0b00010000;
         
       }
 
     }
     
     // Update the analog inputs into the global input variables
-    mode = round(analogRead(modePin)*4/1024.0);
-    tractionControl = analogRead(tractionControlPin)*100/1024;
-    
-    // Get the current button state
+    mode = round(analogRead(modePin)*5/1024.0);
+    tractionControl = round(analogRead(tractionControlPin)*5/1024.0);
+
+//    // Get the current button state
     int engineStartReading = digitalRead(engineStartPin);
     int motorStartReading = digitalRead(motorStartPin);
     int cockpitShutdownReading = digitalRead(cockpitShutdownPin);
     
     // If the reading has changed, reset the debounce timer
-    if(engineStartReading != lastEngineStartReading){
-      lastEngineStart = millis();
-    }
-    if(motorStartReading != lastMotorStartReading){
-      lastMotorStart = millis();
-    }
-    if(cockpitShutdownReading != lastCockpitShutdownReading){
-      lastCockpitShutdown = millis();
-    }
+    if(engineStartReading != lastEngineStartReading)
+      lastEngineStartReadingTime = millis();
+    if(motorStartReading != lastMotorStartReading)
+      lastMotorStartReadingTime = millis();
+    if(cockpitShutdownReading != lastCockpitShutdownReading)
+      lastCockpitShutdownReadingTime = millis();
     
-    // If the reading has been steady for longer than the timer, save that to the global variables
-    if ((millis() - lastEngineStart) > debounceDelay)
+    // If the reading has been steady for longer than the delay, save that to the global variables
+    if ((millis() - lastEngineStartReadingTime) > debounceDelay)
       engineStart = engineStartReading;
-    if ((millis() - lastMotorStart) > debounceDelay)
+    if ((millis() - lastMotorStartReading) > debounceDelay)
       motorStart = motorStartReading;
-    if ((millis() - lastCockpitShutdown) > debounceDelay)
+    if ((millis() - lastCockpitShutdownReading) > debounceDelay)
       cockpitShutdown = cockpitShutdownReading;
+
+    // Update the last reading
+    lastEngineStartReading = engineStartReading;
+    lastMotorStartReading = motorStartReading;
+    lastCockpitShutdownReading = cockpitShutdownReading;
   
-  // Set all LED/buzzer outputs
-  
-    // Set the engine button light
-    digitalWrite(engineLedPin, engineRunning);
+    // Set all LED/buzzer outputs
     
-    // Set the motor button light
-    digitalWrite(motorLedPin, readyToDrive);
-    
-    // Set the buzzer to the inputted value
-    digitalWrite(buzzerPin, buzzerOn);
-    
+      // Set the engine button light
+      digitalWrite(engineLedPin, engineRunning);
+      //if(engineRunning) Serial.println("engineRunning");
+      
+      // Set the motor button light
+      digitalWrite(motorLedPin, readyToDrive);
+      //if(readyToDrive) Serial.println("readyToDrive");
+     
+      // Set the buzzer to the inputted value
+      digitalWrite(buzzerPin, buzzerOn);
+
     // Set the AMS Status LED
     leds.setPixelColor(amsLed, leds.Color(amsStatus*255, 0, 0));
     
@@ -174,7 +181,7 @@ void loop(){
       leds.setPixelColor(coolantTemperatureLed, leds.Color(0, 0, 0));
     
     // Determine the correct color for the state of charge bar
-    float stateOfChargeColor = stateOfCharge/100.0*75+25.0;
+    int stateOfChargeColor = stateOfCharge/100.0*75+25.0;
     
     // Loop through the bar's LEDs and set their color as required
     int i;
@@ -187,14 +194,14 @@ void loop(){
     
     // Determine the correct color for the state of RPM bar
     float rpmRatio = constrain(rpm/maxRpm, 0, 1);
-    float rpmColor = (1-rpmRatio)*110.0+10;
+    int rpmColor = (1-rpmRatio)*110.0+10;
     
     // Check if the bar should be flashing
     if(rpm > flashRpm)
       flashMode = millis();
     else
       flashMode = flashDelay;
-    
+
     // Loop through the bar's LEDs and set their color as required
     int j;
     for(j = 0; j < rpmLength; j++){
@@ -218,9 +225,9 @@ void loop(){
       uint8_t canMessage[8] = {0, 0, 0, 0, 0, 0, 0, 0};
       canMessage[0] = mode;
       canMessage[1] = tractionControl;
-      canMessage[2] = engineStart;
-      canMessage[3] = motorStart;
-      canMessage[4] = cockpitShutdown;
+      canMessage[2] = !engineStart;
+      canMessage[3] = !motorStart;
+      canMessage[4] = !cockpitShutdown;
       
       // Send the message
       CAN.sendMsgBuf(canOutputId, 0, 8, canMessage);

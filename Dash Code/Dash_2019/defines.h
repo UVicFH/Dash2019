@@ -11,10 +11,10 @@ Date:   12-Mar-2019
 */
 
 // Input CAN message
-#define canInputId 0x100
+#define canInputId 100
 
 // Output CAN message
-#define canOutputId 0x90
+#define canOutputId 90
 #define canDelay 50
 
 // Physical pins
@@ -33,7 +33,7 @@ Date:   12-Mar-2019
 #define debounceDelay 50
 
 // LED Specifications
-#define ledCount 60
+#define ledCount 53
 #define flashDelay 50
 
 #define maxRpm 12300.0
@@ -45,8 +45,8 @@ Date:   12-Mar-2019
 #define imdLed 1
 #define coolantTemperatureLed 2
 
-#define stateOfChargeStart 3.0
-#define stateOfChargeLength 10.0
+#define stateOfChargeStart 45
+#define stateOfChargeLength 8
 
-#define rpmStart 3.0
-#define rpmLength 15.0
+#define rpmStart 3
+#define rpmLength 42

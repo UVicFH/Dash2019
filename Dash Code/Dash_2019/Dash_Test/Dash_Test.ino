@@ -1,10 +1,11 @@
-// This is the tester file written for the PDU
-// Can be modified for use with the dash
+// This is the tester file written for the Dash
+// Original author: Chad J. McColm
+// Editor: Tylynn Haddow
 #include <mcp_can.h>
 #include <SPI.h>
 
 const int SPI_CS_PIN = 9;
-int ID = 0x90;
+int ID = 100;
 
 MCP_CAN CAN(SPI_CS_PIN);
 
@@ -25,7 +26,7 @@ void setup()
 void two_second_send(byte * data){
   
   for(int i = 0; i < 20; i++){
-    CAN.sendMsgBuf(0x50, 0, 3, data);
+    CAN.sendMsgBuf(ID, 0, 8, data);
     // Serial.println("Message Sent");
     delay(100);
   }
@@ -35,68 +36,40 @@ void two_second_send(byte * data){
 void loop()
 {
   // Create a placeholder for the message to be sent
-  byte message[3] = {0,0,0};
+  byte message[8] = {0,0,0,0,0,0,0,0};
+ 
+  // Cycle power to buzzer, motor LED, and engine Led for 2 seconds
+  message[5] = 0b00000001;
+  Serial.println("engine LED");
+  two_second_send(message);
+
+  message[5] = 0b0;
+  Serial.println("off");
+  two_second_send(message);
+
+  message[5] = 0b00000010;
+  Serial.println("motor LED");
+  two_second_send(message);
 //
-//  Serial.println("Blank Message Initialized!");
-//  
-  // Cycle power to each shifter, the starter, the spare, the ready to go, the microsquirt, the fuel pump, and brake light for 2 seconds
-  message[0] = 0b10000000;
-  Serial.println("Shift Down!");
-  two_second_send(message);
-
-  message[0] >>= 1;
-  Serial.println("Shift Up!");
-  two_second_send(message);
-
-  message[0] >>= 1;
-  Serial.println("Starter!");
-  two_second_send(message);
-
-  message[0] >>= 1;
-  Serial.println("Spare1!");
-  two_second_send(message);
-
-  message[0] >>= 2;
-  Serial.println("MicroSquirt!");
-  two_second_send(message);
-
-  message[0] >>= 1;
-  Serial.println("Fuel Pump!");
-  two_second_send(message);
-
-  message[0] >>= 1;
-  Serial.println("Brake Light!");
-  two_second_send(message);
-//  
-//  // Turn everything off
-//  message[0] = 0b0;
+//  message[5] = 0b00000100;
+//  Serial.println("buzzer");
 //  two_second_send(message);
-//
-  // Ramp up the engine fan and bring it back down again in two seconds
-//  Serial.println("Fan Up!");
-//  for(int i = 0; i < 160; i++){
-//    message[2] = i;
-//    CAN.sendMsgBuf(ID, 0, 3, message);
-//    delay(16);
-//  }
-//  Serial.println("Fan Down!");
-//  for(int i = 160; i >=0; i--){
-//    message[2] = i;
-//    CAN.sendMsgBuf(ID, 0, 3, message);
-//    delay(16);
-//  }
-//
-//  message[2]=160;
-//  Serial.println("Fan on");
-//  two_second_send(message);
-//
-//  delay(10000);
-//
-//  message[2] = 0;
-//  Serial.println("Fan off");
-//  two_second_send(message);
-//
-//  delay(6000);
-  
+
+
+  message[1] = 0b01111111;
+  message[2] = 0b00011111;
+  message[3] = 0b00011111;
+  message[4] = 0b00011111;
+  message[5] = 0b00011000;
+  Serial.println("clt and rpm");
+  two_second_send(message);
+
+  message[5] = 0b0;
+  message[1] = 0b0;
+  message[2] = 0b0;
+  message[3] = 0b0;
+  Serial.println("off");
+  two_second_send(message);
+
 
 }
