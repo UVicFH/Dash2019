@@ -10,14 +10,14 @@ Date:   12-Mar-2019
 
 */
 
-// Input CAN message
+// Input CAN message (from other CAN nodes)
 #define megasquirt_gp0 1520   
 #define megasquirt_gp2 1522
-#define dash_output 100
+#define dash_input 100
 
 
-// Output CAN message
-#define dash_input 90
+// Output CAN message (to other CAN nodes)
+#define dash_output 90
 #define canOutputDelay 500
 
 // Physical pins

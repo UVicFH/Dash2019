@@ -82,13 +82,14 @@ void setup()
   CAN.init_Filt(0, 0, megasquirt_gp0);
   CAN.init_Filt(1, 0, megasquirt_gp2);
   CAN.init_Mask(1, 0, 0x7FF);      //mask the full standard frame (11bit) 
-  CAN.init_Filt(2, 0, dash_output);
-  CAN.init_Filt(3, 0, dash_output);
-  CAN.init_Filt(4, 0, dash_output);
-  CAN.init_Filt(5, 0, dash_output);
+  CAN.init_Filt(2, 0, dash_input);
+  CAN.init_Filt(3, 0, dash_input);
+  CAN.init_Filt(4, 0, dash_input);
+  CAN.init_Filt(5, 0, dash_input);
 
   pinMode(engineStartPin, INPUT_PULLUP);
   pinMode(motorStartPin, INPUT_PULLUP);
+  pinMode(cockpitShutdownPin, INPUT_PULLUP);
   
 }
 
@@ -121,7 +122,7 @@ void loop(){
         coolantTemperature = ((incomingMessageData[6] << 8) | incomingMessageData[7])/10.0;        
       }
       
-      if(incomingMessageId == dash_output){
+      if(incomingMessageId == dash_input){
         // little-endian (intel)        
         // Process the message into the global input variables        
         stateOfCharge = incomingMessageData[0];
@@ -238,7 +239,7 @@ void loop(){
       canMessage[1] = (!engineStart & 0b00000001) | (!motorStart << 1  & 0b00000010) | (!cockpitShutdown << 2  & 0b00000100);
             
       // Send the message
-      CAN.sendMsgBuf(dash_input, 0, 2, canMessage);
+      CAN.sendMsgBuf(dash_output, 0, 2, canMessage);
       
       // Update the last send time
       canLastSent = millis();
