@@ -11,11 +11,14 @@ Date:   12-Mar-2019
 */
 
 // Input CAN message
-#define canInputId 100
+#define megasquirt_gp0 1520   
+#define megasquirt_gp2 1522
+#define dash_output 100
+
 
 // Output CAN message
-#define canOutputId 90
-#define canDelay 50
+#define dash_input 90
+#define canOutputDelay 500
 
 // Physical pins
 #define spiCsPin 9

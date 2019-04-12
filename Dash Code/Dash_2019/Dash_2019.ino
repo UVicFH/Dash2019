@@ -77,13 +77,15 @@ void setup()
   Serial.println("CAN BUS Initialized OK!");
   
   // By default, both masks are fully open and no identifier bits are masked
-  // Set the hardware filters to only look for the expected input id
-  CAN.init_Filt(0, 0, canInputId);
-  CAN.init_Filt(1, 0, canInputId);       
-  CAN.init_Filt(2, 0, canInputId);
-  CAN.init_Filt(3, 0, canInputId);
-  CAN.init_Filt(4, 0, canInputId);
-  CAN.init_Filt(5, 0, canInputId);
+  // Set the hardware and masks filters to only look for the expected input id
+  CAN.init_Mask(0, 0, 0x7FF);       //mask the full standard frame (11bit)
+  CAN.init_Filt(0, 0, megasquirt_gp0);
+  CAN.init_Filt(1, 0, megasquirt_gp2);
+  CAN.init_Mask(1, 0, 0x7FF);      //mask the full standard frame (11bit) 
+  CAN.init_Filt(2, 0, dash_output);
+  CAN.init_Filt(3, 0, dash_output);
+  CAN.init_Filt(4, 0, dash_output);
+  CAN.init_Filt(5, 0, dash_output);
 
   pinMode(engineStartPin, INPUT_PULLUP);
   pinMode(motorStartPin, INPUT_PULLUP);
@@ -107,18 +109,27 @@ void loop(){
       incomingMessageId = CAN.getCanId();
       
       // Double check that the filter got the right ID before saving the data
-      if(incomingMessageId == canInputId){
-        
+      if(incomingMessageId == megasquirt_gp0){        
+        // big-endian (motorola)
         // Process the message into the global input variables
-        rpm = incomingMessageData[0] << 8 || incomingMessageData[1];
-        coolantTemperature = (incomingMessageData[2] << 8 || incomingMessageData[3])/10.0;
-        stateOfCharge = incomingMessageData[4];
-        engineRunning = incomingMessageData[5] & 0b00000001;
-        readyToDrive = incomingMessageData[5] & 0b00000010;
-        buzzerOn = incomingMessageData[5] & 0b00000100;
-        amsStatus = incomingMessageData[5] & 0b00001000;
-        imdStatus = incomingMessageData[5] & 0b00010000;
-        
+        rpm = (incomingMessageData[6] << 8) | incomingMessageData[7];        
+      }
+      
+      if(incomingMessageId == megasquirt_gp2){
+        // big-endian (motorola)
+        // Process the message into the global input variables;
+        coolantTemperature = ((incomingMessageData[6] << 8) | incomingMessageData[7])/10.0;        
+      }
+      
+      if(incomingMessageId == dash_output){
+        // little-endian (intel)        
+        // Process the message into the global input variables        
+        stateOfCharge = incomingMessageData[0];
+        engineRunning = incomingMessageData[1] & 0b00000001;
+        readyToDrive = incomingMessageData[1] & 0b00000010;
+        buzzerOn = incomingMessageData[1] & 0b00000100;
+        amsStatus = incomingMessageData[1] & 0b00001000;
+        imdStatus = incomingMessageData[1] & 0b00010000;
       }
 
     }
@@ -219,18 +230,15 @@ void loop(){
   // Update all CAN outputs
   
     // Check if it's been long enough since the last CAN message was sent
-    if(millis()-canLastSent > canDelay){
+    if(millis()-canLastSent >= canOutputDelay){
       
       // Build a new message
-      uint8_t canMessage[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-      canMessage[0] = mode;
-      canMessage[1] = tractionControl;
-      canMessage[2] = !engineStart;
-      canMessage[3] = !motorStart;
-      canMessage[4] = !cockpitShutdown;
-      
+      uint8_t canMessage[2] = {0, 0};
+      canMessage[0] = ((tractionControl & 0xF) << 4) | (mode & 0xF) ;
+      canMessage[1] = (!engineStart & 0b00000001) | (!motorStart << 1  & 0b00000010) | (!cockpitShutdown << 2  & 0b00000100);
+            
       // Send the message
-      CAN.sendMsgBuf(canOutputId, 0, 8, canMessage);
+      CAN.sendMsgBuf(dash_input, 0, 2, canMessage);
       
       // Update the last send time
       canLastSent = millis();
