@@ -183,7 +183,7 @@ void loop(){
       leds.setPixelColor(coolantTemperatureLed, leds.Color(0, 0, 0));
     
     // Determine the correct color for the state of charge bar
-    int stateOfChargeColor = round(stateOfCharge/100.0*75+25.0);
+    int stateOfChargeColor = round(stateOfCharge);
     
     // Loop through the bar's LEDs and set their color as required
     int i;
@@ -196,7 +196,7 @@ void loop(){
     
     // Determine the correct color for the state of RPM bar
     float rpmRatio = constrain(rpm/maxRpm, 0, 1);
-    int rpmColor = round((1-rpmRatio)*110.0+10);
+    int rpmColor = round((1-rpmRatio)*120.0);
     
     // Check if the bar should be flashing
     if(rpm > flashRpm)
