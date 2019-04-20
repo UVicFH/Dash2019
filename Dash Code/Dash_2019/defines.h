@@ -9,16 +9,12 @@ Author: Chad McColm
 Date:   12-Mar-2019
 
 */
+// Input CAN message
+#define canInputId 100
 
-// Input CAN message (from other CAN nodes)
-#define megasquirt_gp0 1520   
-#define megasquirt_gp2 1522
-#define dash_input 100
-
-
-// Output CAN message (to other CAN nodes)
-#define dash_output 90
-#define canOutputDelay 500
+// Output CAN message
+#define canOutputId 90
+#define canDelay 50
 
 // Physical pins
 #define spiCsPin 9
@@ -36,8 +32,8 @@ Date:   12-Mar-2019
 #define debounceDelay 50
 
 // LED Specifications
-#define ledCount 53
-#define flashDelay 50
+#define ledCount 57
+#define flashDelay 90
 
 #define maxRpm 12300.0
 #define flashRpm 11500.0
@@ -45,11 +41,11 @@ Date:   12-Mar-2019
 #define coolantHot 190
 
 #define amsLed 0
-#define imdLed 1
-#define coolantTemperatureLed 2
+#define imdLed 3
+#define coolantTemperatureLed 6
 
-#define stateOfChargeStart 45
+#define stateOfChargeStart 49
 #define stateOfChargeLength 8
 
-#define rpmStart 3
+#define rpmStart 7
 #define rpmLength 42

@@ -145,9 +145,9 @@ void loop(){
     // If the reading has been steady for longer than the delay, save that to the global variables
     if ((millis() - lastEngineStartReadingTime) > debounceDelay)
       engineStart = engineStartReading;
-    if ((millis() - lastMotorStartReading) > debounceDelay)
+    if ((millis() - lastMotorStartReadingTime) > debounceDelay)
       motorStart = motorStartReading;
-    if ((millis() - lastCockpitShutdownReading) > debounceDelay)
+    if ((millis() - lastCockpitShutdownReadingTime) > debounceDelay)
       cockpitShutdown = cockpitShutdownReading;
 
     // Update the last reading
@@ -168,11 +168,11 @@ void loop(){
       // Set the buzzer to the inputted value
       digitalWrite(buzzerPin, buzzerOn);
 
-    // Set the AMS Status LED
-    leds.setPixelColor(amsLed, leds.Color(!amsStatus*255, 0, 0));
-    
-    // Set the IMD Status LED
-    leds.setPixelColor(imdLed, leds.Color(!imdStatus*255, 0, 0));
+      // Set the AMS Status LED
+      leds.setPixelColor(amsLed, leds.Color(!amsStatus*255, 0, 0));
+      
+      // Set the IMD Status LED
+      leds.setPixelColor(imdLed, leds.Color(!imdStatus*255, 0, 0));
     
     // Set the engine temperature LED based on temperature. Normal is off, low is green, hot is red
     if(coolantTemperature < coolantCold)
