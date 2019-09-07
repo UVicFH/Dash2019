@@ -160,12 +160,12 @@ void loop(){
 
         // Process the message into the global input variables
         stateOfCharge = incomingMessageData[0];
-        engineRunning = (incomingMessageData[1] & 0b10000000) >> 7;
-        readyToDrive = (incomingMessageData[1] & 0b01000000) >> 6;
-        buzzerOn = (incomingMessageData[1] & 0b00100000) >> 5;
-        amsStatus = (incomingMessageData[1] & 0b00010000) >> 4;
-        imdStatus = (incomingMessageData[1] & 0b00001000) >> 3;
-        launchActivated = (incomingMessageData[1] & 0b00000100) >> 2;
+        engineRunning = incomingMessageData[1] & 0b00000001;
+        readyToDrive = (incomingMessageData[1] & 0b00000010) >> 1;
+        buzzerOn = (incomingMessageData[1] & 0b00000100) >> 2;
+        amsStatus = (incomingMessageData[1] & 0b00001000) >> 3;
+        imdStatus = (incomingMessageData[1] & 0b00010000) >> 4;
+        launchActivated = (incomingMessageData[1] & 0b00100000) >> 5;
 
       }
 
@@ -308,7 +308,7 @@ void loop(){
 
       // Build a new message
       uint8_t canMessage;
-      canMessage = mode << 5 | tractionControl << 2 | !engineStart << 1 | !motorStart;
+      canMessage = mode | tractionControl << 3 | !engineStart << 6 | !motorStart << 7;
 
       // Send the message
       CAN.sendMsgBuf(canOutputId, 0, 1, &canMessage);
