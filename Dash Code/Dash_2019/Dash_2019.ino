@@ -33,19 +33,17 @@ bool readyToDrive;
 bool buzzerOn = 0;
 bool amsStatus;
 bool imdStatus;
+bool launchActivated;
 int mode;
 int tractionControl;
 bool engineStart = 1;
 bool motorStart = 1;
-bool cockpitShutdown = 1;
 
 // Global variables for debouncing inputs
 bool lastEngineStartReading;
 bool lastMotorStartReading;
-bool lastCockpitShutdownReading;
 unsigned long lastEngineStartReadingTime;
 unsigned long lastMotorStartReadingTime;
-unsigned long lastCockpitShutdownReadingTime;
 
 // CAN frequency tracking
 unsigned long canLastSent;
@@ -83,18 +81,8 @@ void setup()
   }
   Serial.println("CAN BUS Initialized OK!");
 
-  // By default, both masks are fully open and no identifier bits are masked
-  // Set the hardware filters to only look for the expected input id
-  CAN.init_Filt(0, 0, canInputId);
-  CAN.init_Filt(1, 0, canInputId);
-  CAN.init_Filt(2, 0, canInputId);
-  CAN.init_Filt(3, 0, canInputId);
-  CAN.init_Filt(4, 0, canInputId);
-  CAN.init_Filt(5, 0, canInputId);
-
   pinMode(engineStartPin, INPUT_PULLUP);
   pinMode(motorStartPin, INPUT_PULLUP);
-  pinMode(cockpitShutdownPin, INPUT_PULLUP);
 
 }
 
@@ -104,43 +92,42 @@ void loop(){
     clearLEDs();
     leds.show();
   }
-  // Update all inputs
-  // DEMO mode inputs
-  if ((mode == 5) && (tractionControl == 5))
-  {
-     if (temp_dir) {
-        temp_counter += 20;
-     }
-     else {
-      temp_counter -= 20;
-     }
-     if (temp_dirRpm){
-          temp_counterrpm += 100;
-     } 
-     else {
-      temp_counterrpm -= 100;
-     }
-     if ( rpmHoldTime && ((millis()-rpmHoldTime) >=rpm_hold) ) {
-        rpmHoldTime = 0;
-        temp_dirRpm = 0;
-     }
-      
-     if (temp_counterrpm >13000){
-      temp_counterrpm = 13000;
-      if (!rpmHoldTime) rpmHoldTime = millis();
-     }
-     if (temp_counterrpm <2000){
-      temp_counterrpm = 2000;
-     }
-     // Process the message into the global input variables
-     rpm = map(temp_counterrpm, 0, 13000, 0, 13000);
-     coolantTemperature = map(temp_counter, 0, 13000, 0, 200);
-     stateOfCharge = map(temp_counter, 0, 13000, 0, 100);
-     engineRunning = 0;
-     readyToDrive = 0;
-     buzzerOn = 0;
-     amsStatus = 0;
-     imdStatus = 0;
+  
+  // DEMO mode
+  if ((mode == 5) && (tractionControl == 5)){
+    if (temp_dir) {
+      temp_counter += 20;
+    }
+    else {
+    temp_counter -= 20;
+    }
+    if (temp_dirRpm){
+        temp_counterrpm += 100;
+    } 
+    else {
+    temp_counterrpm -= 100;
+    }
+    if ( rpmHoldTime && ((millis()-rpmHoldTime) >=rpm_hold) ) {
+      rpmHoldTime = 0;
+      temp_dirRpm = 0;
+    }
+    
+    if (temp_counterrpm >13000){
+    temp_counterrpm = 13000;
+    if (!rpmHoldTime) rpmHoldTime = millis();
+    }
+    if (temp_counterrpm <2000){
+    temp_counterrpm = 2000;
+    }
+    // Process the message into the global input variables
+    rpm = map(temp_counterrpm, 0, 13000, 0, 13000);
+    coolantTemperature = map(temp_counter, 0, 13000, 0, 200);
+    stateOfCharge = map(temp_counter, 0, 13000, 0, 100);
+    engineRunning = 0;
+    readyToDrive = 0;
+    buzzerOn = 0;
+    amsStatus = 0;
+    imdStatus = 0;
 
     if (temp_counter>13000)
     {
@@ -152,10 +139,10 @@ void loop(){
       temp_dirRpm = 1;
     }
 
-   }
-   // NORMAL mode inputs
-   else
-   {
+  }
+  // NORMAL mode
+  else{
+    // Update all inputs
     // Check if there is a CAN message available on the bus
     if(CAN_MSGAVAIL == CAN.checkReceive()){
 
@@ -168,72 +155,88 @@ void loop(){
       CAN.readMsgBuf(&incomingMessageLength, incomingMessageData);
       incomingMessageId = CAN.getCanId();
 
-      // Double check that the filter got the right ID before saving the data
-      if(incomingMessageId == canInputId){
+      // Store things sent from MCU
+      if(incomingMessageId == canInputIdMCU){
 
         // Process the message into the global input variables
-        rpm = incomingMessageData[1] << 8 | incomingMessageData[0];
-        coolantTemperature = (incomingMessageData[3] << 8 | incomingMessageData[2])/10.0;
-        stateOfCharge = incomingMessageData[4];
-        engineRunning = incomingMessageData[5] & 0b00000001;
-        readyToDrive = incomingMessageData[5] & 0b00000010;
-        buzzerOn = incomingMessageData[5] & 0b00000100;
-        amsStatus = incomingMessageData[5] & 0b00001000;
-        imdStatus = incomingMessageData[5] & 0b00010000;
+        stateOfCharge = incomingMessageData[0];
+        engineRunning = (incomingMessageData[1] & 0b10000000) >> 7;
+        readyToDrive = (incomingMessageData[1] & 0b01000000) >> 6;
+        buzzerOn = (incomingMessageData[1] & 0b00100000) >> 5;
+        amsStatus = (incomingMessageData[1] & 0b00010000) >> 4;
+        imdStatus = (incomingMessageData[1] & 0b00001000) >> 3;
+        launchActivated = (incomingMessageData[1] & 0b00000100) >> 2;
+
+      }
+
+      // Store things sent from Microsquirt (1)
+      if(incomingMessageId == canInputIdRPM){
+
+        // Process the message into the global input variables
+        rpm = incomingMessageData[6] << 8 |incomingMessageData[7];
+
+      }
+
+      // Store things sent from Microsquirt (2)
+      if(incomingMessageId == canInputIdCLT){
+
+        // Process the message into the global input variables
+        coolantTemperature = (incomingMessageData[6] << 8 | incomingMessageData[7])/10.0;
 
       }
 
     }
-   }
+  }
+
+  // If launch control is active then override the RPM bar with max to make it flash
+  if(launchActivated){
+    rpm = 12200;
+  }
+
+  // Update driver inputs
 
     // Update the analog inputs into the global input variables
-    mode = round(analogRead(modePin)*5/1024.0);
-    tractionControl = round(analogRead(tractionControlPin)*5/1024.0);
+    mode = round(analogRead(modePin)*5/1024.0)+1;
+    tractionControl = round(analogRead(tractionControlPin)*5/1024.0)+1;
 
-//    // Get the current button state
+    // Get the current button state
     int engineStartReading = digitalRead(engineStartPin);
     int motorStartReading = digitalRead(motorStartPin);
-    int cockpitShutdownReading = digitalRead(cockpitShutdownPin);
 
     // If the reading has changed, reset the debounce timer
     if(engineStartReading != lastEngineStartReading)
       lastEngineStartReadingTime = millis();
     if(motorStartReading != lastMotorStartReading)
       lastMotorStartReadingTime = millis();
-    if(cockpitShutdownReading != lastCockpitShutdownReading)
-      lastCockpitShutdownReadingTime = millis();
 
     // If the reading has been steady for longer than the delay, save that to the global variables
     if ((millis() - lastEngineStartReadingTime) > debounceDelay)
       engineStart = engineStartReading;
     if ((millis() - lastMotorStartReadingTime) > debounceDelay)
       motorStart = motorStartReading;
-    if ((millis() - lastCockpitShutdownReadingTime) > debounceDelay)
-      cockpitShutdown = cockpitShutdownReading;
 
     // Update the last reading
     lastEngineStartReading = engineStartReading;
     lastMotorStartReading = motorStartReading;
-    lastCockpitShutdownReading = cockpitShutdownReading;
 
-    // Set all LED/buzzer outputs
+  // Set all LED/buzzer outputs
 
-      // Set the engine button light
-      digitalWrite(engineLedPin, engineRunning);
-      //if(engineRunning) Serial.println("engineRunning");
+    // Set the engine button light
+    digitalWrite(engineLedPin, engineRunning);
+    //if(engineRunning) Serial.println("engineRunning");
 
-      // Set the motor button light
-      digitalWrite(motorLedPin, readyToDrive);
-      //if(readyToDrive) Serial.println("readyToDrive");
+    // Set the motor button light
+    digitalWrite(motorLedPin, readyToDrive);
+    //if(readyToDrive) Serial.println("readyToDrive");
 
-      // Set the buzzer to the inputted value
-      digitalWrite(buzzerPin, buzzerOn);
+    // Set the buzzer to the inputted value
+    digitalWrite(buzzerPin, buzzerOn);
 
-      // Set the AMS Status LED
-      leds.setPixelColor(amsLed, leds.Color(!amsStatus*255, 0, 0));
+    // Set the AMS Status LED
+    leds.setPixelColor(amsLed, leds.Color(!amsStatus*255, 0, 0));
 
-      // Set the IMD Status LED
-      leds.setPixelColor(imdLed, leds.Color(!imdStatus*255, 0, 0));
+    // Set the IMD Status LED
+    leds.setPixelColor(imdLed, leds.Color(!imdStatus*255, 0, 0));
 
     // Set the engine temperature LED based on temperature. Normal is off, low is green, hot is red
     if(coolantTemperature < coolantCold)
@@ -294,23 +297,21 @@ void loop(){
           leds.setPixelColor(j + rpmStart, 0);
         }
     }
+
   // Update the led changes just made
-  leds.show();
+    leds.show();
+    
   // Update all CAN outputs
 
     // Check if it's been long enough since the last CAN message was sent
     if(millis()-canLastSent > canDelay){
 
       // Build a new message
-      uint8_t canMessage[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-      canMessage[0] = mode;
-      canMessage[1] = tractionControl;
-      canMessage[2] = !engineStart;
-      canMessage[3] = !motorStart;
-      canMessage[4] = !cockpitShutdown;
+      uint8_t canMessage;
+      canMessage = mode << 5 | tractionControl << 2 | !engineStart << 1 | !motorStart;
 
       // Send the message
-      CAN.sendMsgBuf(canOutputId, 0, 8, canMessage);
+      CAN.sendMsgBuf(canOutputId, 0, 1, &canMessage);
 
       // Update the last send time
       canLastSent = millis();

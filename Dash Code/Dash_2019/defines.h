@@ -10,11 +10,13 @@ Date:   12-Mar-2019
 
 */
 // Input CAN message
-#define canInputId 100
+#define canInputIdMCU 100
+#define canInputIdRPM 1520
+#define canInputIdCLT 1522
 
 // Output CAN message
 #define canOutputId 90
-#define canDelay 50
+#define canDelay 100
 
 // Physical pins
 #define spiCsPin 9
@@ -26,7 +28,6 @@ Date:   12-Mar-2019
 #define motorStartPin 6
 #define motorLedPin 7
 #define engineLedPin 8
-#define cockpitShutdownPin 10
 
 // Physical pin debouncing delay
 #define debounceDelay 50
