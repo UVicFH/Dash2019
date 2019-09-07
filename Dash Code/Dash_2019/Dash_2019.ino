@@ -1,4 +1,4 @@
-  /* 
+  /*
 
 Date:   12-Mar-2019
 Author: Chad McColm
@@ -53,19 +53,26 @@ unsigned long canLastSent;
 // Flash frequency tracking
 unsigned long flashMode;
 
+// DEMO mode variables
+int temp_counter = 0;
+int temp_counterrpm = 0;
+int temp_dir = 1;
+unsigned long LedClearTime;
+int rpm_hold = 500;
+unsigned long rpmHoldTime;
+int temp_dirRpm = 1;
+
 // This function runs on setup
 void setup()
 {
-  
+
   // Initialize the led strip, set them all to off, and update the strip
   leds.begin();
-  
-  // Set all LEDs to off initially 
-  for (int i = 0; i < ledCount; i++){
-    leds.setPixelColor(i, 0);
-  }
+
+  // Set all LEDs to off initially
+  clearLEDs();
   leds.show();
-  
+
   // Start up a serial interface in case any data needs to be sent to the connected PC
   Serial.begin(115200);
 
@@ -75,11 +82,11 @@ void setup()
     delay(100);
   }
   Serial.println("CAN BUS Initialized OK!");
-  
+
   // By default, both masks are fully open and no identifier bits are masked
   // Set the hardware filters to only look for the expected input id
   CAN.init_Filt(0, 0, canInputId);
-  CAN.init_Filt(1, 0, canInputId);       
+  CAN.init_Filt(1, 0, canInputId);
   CAN.init_Filt(2, 0, canInputId);
   CAN.init_Filt(3, 0, canInputId);
   CAN.init_Filt(4, 0, canInputId);
@@ -88,28 +95,82 @@ void setup()
   pinMode(engineStartPin, INPUT_PULLUP);
   pinMode(motorStartPin, INPUT_PULLUP);
   pinMode(cockpitShutdownPin, INPUT_PULLUP);
-  
+
 }
 
 void loop(){
-  
+
+  if ((millis()-LedClearTime) >= 2000){
+    clearLEDs();
+    leds.show();
+  }
   // Update all inputs
-  
+  // DEMO mode inputs
+  if ((mode == 5) && (tractionControl == 5))
+  {
+     if (temp_dir) {
+        temp_counter += 20;
+     }
+     else {
+      temp_counter -= 20;
+     }
+     if (temp_dirRpm){
+          temp_counterrpm += 100;
+     } 
+     else {
+      temp_counterrpm -= 100;
+     }
+     if ( rpmHoldTime && ((millis()-rpmHoldTime) >=rpm_hold) ) {
+        rpmHoldTime = 0;
+        temp_dirRpm = 0;
+     }
+      
+     if (temp_counterrpm >13000){
+      temp_counterrpm = 13000;
+      if (!rpmHoldTime) rpmHoldTime = millis();
+     }
+     if (temp_counterrpm <2000){
+      temp_counterrpm = 2000;
+     }
+     // Process the message into the global input variables
+     rpm = map(temp_counterrpm, 0, 13000, 0, 13000);
+     coolantTemperature = map(temp_counter, 0, 13000, 0, 200);
+     stateOfCharge = map(temp_counter, 0, 13000, 0, 100);
+     engineRunning = 0;
+     readyToDrive = 0;
+     buzzerOn = 0;
+     amsStatus = 0;
+     imdStatus = 0;
+
+    if (temp_counter>13000)
+    {
+      temp_dir =0;
+    }
+    else if (temp_counter<0)
+    {
+      temp_dir =1;
+      temp_dirRpm = 1;
+    }
+
+   }
+   // NORMAL mode inputs
+   else
+   {
     // Check if there is a CAN message available on the bus
     if(CAN_MSGAVAIL == CAN.checkReceive()){
-      
+
       // Create a place to store the incoming CAN message
       unsigned char incomingMessageLength = 0;
       unsigned char incomingMessageData[8];
       unsigned long incomingMessageId = 0;
-      
+
       // Save the CAN message and id
       CAN.readMsgBuf(&incomingMessageLength, incomingMessageData);
       incomingMessageId = CAN.getCanId();
-      
+
       // Double check that the filter got the right ID before saving the data
       if(incomingMessageId == canInputId){
-        
+
         // Process the message into the global input variables
         rpm = incomingMessageData[1] << 8 | incomingMessageData[0];
         coolantTemperature = (incomingMessageData[3] << 8 | incomingMessageData[2])/10.0;
@@ -119,12 +180,12 @@ void loop(){
         buzzerOn = incomingMessageData[5] & 0b00000100;
         amsStatus = incomingMessageData[5] & 0b00001000;
         imdStatus = incomingMessageData[5] & 0b00010000;
-        
+
       }
 
     }
-    
-  
+   }
+
     // Update the analog inputs into the global input variables
     mode = round(analogRead(modePin)*5/1024.0);
     tractionControl = round(analogRead(tractionControlPin)*5/1024.0);
@@ -133,7 +194,7 @@ void loop(){
     int engineStartReading = digitalRead(engineStartPin);
     int motorStartReading = digitalRead(motorStartPin);
     int cockpitShutdownReading = digitalRead(cockpitShutdownPin);
-    
+
     // If the reading has changed, reset the debounce timer
     if(engineStartReading != lastEngineStartReading)
       lastEngineStartReadingTime = millis();
@@ -141,7 +202,7 @@ void loop(){
       lastMotorStartReadingTime = millis();
     if(cockpitShutdownReading != lastCockpitShutdownReading)
       lastCockpitShutdownReadingTime = millis();
-    
+
     // If the reading has been steady for longer than the delay, save that to the global variables
     if ((millis() - lastEngineStartReadingTime) > debounceDelay)
       engineStart = engineStartReading;
@@ -154,26 +215,26 @@ void loop(){
     lastEngineStartReading = engineStartReading;
     lastMotorStartReading = motorStartReading;
     lastCockpitShutdownReading = cockpitShutdownReading;
-  
+
     // Set all LED/buzzer outputs
-    
+
       // Set the engine button light
       digitalWrite(engineLedPin, engineRunning);
       //if(engineRunning) Serial.println("engineRunning");
-      
+
       // Set the motor button light
       digitalWrite(motorLedPin, readyToDrive);
       //if(readyToDrive) Serial.println("readyToDrive");
-     
+
       // Set the buzzer to the inputted value
       digitalWrite(buzzerPin, buzzerOn);
 
       // Set the AMS Status LED
       leds.setPixelColor(amsLed, leds.Color(!amsStatus*255, 0, 0));
-      
+
       // Set the IMD Status LED
       leds.setPixelColor(imdLed, leds.Color(!imdStatus*255, 0, 0));
-    
+
     // Set the engine temperature LED based on temperature. Normal is off, low is green, hot is red
     if(coolantTemperature < coolantCold)
       leds.setPixelColor(coolantTemperatureLed, leds.Color(28, 135, 229));
@@ -181,10 +242,10 @@ void loop(){
       leds.setPixelColor(coolantTemperatureLed, leds.Color(255, 0, 0));
     else
       leds.setPixelColor(coolantTemperatureLed, leds.Color(0, 0, 0));
-    
+
     // Determine the correct color for the state of charge bar
     int stateOfChargeColor = round(stateOfCharge);
-    
+
     // Loop through the bar's LEDs and set their color as required
     int i;
     for(i = 0; i < stateOfChargeLength; i++){
@@ -193,36 +254,53 @@ void loop(){
       else
         leds.setPixelColor(i + stateOfChargeStart, 0);
     }
-    
+
     // Determine the correct color for the state of RPM bar
     float rpmRatio = constrain(rpm/maxRpm, 0, 1);
     int rpmColor = round((1-rpmRatio)*120.0);
-    
-    // Check if the bar should be flashing
-    if(rpm > flashRpm)
-      flashMode = millis();
-    else
-      flashMode = flashDelay;
 
     // Loop through the bar's LEDs and set their color as required
     int j;
-    for(j = 0; j < rpmLength; j++){
-      if(j < rpmRatio*rpmLength){
-        int flash = (flashMode / flashDelay) % 2;
-        leds.setPixelColor(j + rpmStart, HSBtoRGB(rpmColor*flash,1,1));
-      }
-      else
-        leds.setPixelColor(j + rpmStart, 0);
-    }
+    int flasher = 1;
     
-    // Update the led changes just made
-    leds.show();
-  
+    if (rpm >= flashRpm){
+      if ((millis()-flashMode) >= flashDelay){
+        flasher = !flasher;
+        flashMode = millis();
+      }
+      if (flasher){
+        for(j = 0; j < rpmLength; j++){
+           leds.setPixelColor(j + rpmStart, 0);
+        }
+        leds.show();
+      }
+      else {
+        for(j = 0; j < rpmLength; j++){
+          if(j < rpmRatio*rpmLength){
+            int flash = (flashMode / flashDelay) % 2;
+            leds.setPixelColor(j + rpmStart, HSBtoRGB(rpmColor,1,1));
+        }
+        else
+          leds.setPixelColor(j + rpmStart, 0);
+        }
+      }
+    } else {
+      for(j = 0; j < rpmLength; j++){
+          if(j < rpmRatio*rpmLength){
+            int flash = (flashMode / flashDelay) % 2;
+            leds.setPixelColor(j + rpmStart, HSBtoRGB(rpmColor,1,1));
+        }
+        else
+          leds.setPixelColor(j + rpmStart, 0);
+        }
+    }
+  // Update the led changes just made
+  leds.show();
   // Update all CAN outputs
-  
+
     // Check if it's been long enough since the last CAN message was sent
     if(millis()-canLastSent > canDelay){
-      
+
       // Build a new message
       uint8_t canMessage[8] = {0, 0, 0, 0, 0, 0, 0, 0};
       canMessage[0] = mode;
@@ -230,21 +308,21 @@ void loop(){
       canMessage[2] = !engineStart;
       canMessage[3] = !motorStart;
       canMessage[4] = !cockpitShutdown;
-      
+
       // Send the message
       CAN.sendMsgBuf(canOutputId, 0, 8, canMessage);
-      
+
       // Update the last send time
       canLastSent = millis();
     }
-    
+
 }
 
 long HSBtoRGB(float _hue, float _sat, float _brightness) {
   float red = 0.0;
   float green = 0.0;
   float blue = 0.0;
-  
+
   if (_sat == 0.0) {
     red = _brightness;
     green = _brightness;
@@ -305,5 +383,13 @@ long HSBtoRGB(float _hue, float _sat, float _brightness) {
   long iblue = blue * 255.0;
 
   return long((ired << 16) | (igreen << 8) | (iblue));
-  
+
+}
+
+void clearLEDs()
+{
+  for (int i=0; i<ledCount; i++)
+  {
+    leds.setPixelColor(i, 0);
+  }
 }

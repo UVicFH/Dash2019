@@ -32,7 +32,7 @@ Date:   12-Mar-2019
 #define debounceDelay 50
 
 // LED Specifications
-#define ledCount 57
+#define ledCount 57   //57
 #define flashDelay 90
 
 #define maxRpm 12300.0
