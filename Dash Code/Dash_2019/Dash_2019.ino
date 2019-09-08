@@ -88,9 +88,10 @@ void setup()
 
 void loop(){
 
-  if ((millis()-LedClearTime) >= 2000){
+  if ((millis()-LedClearTime) >= 5000){
     clearLEDs();
     leds.show();
+    LedClearTime = millis();
   }
   
   // DEMO mode
@@ -275,18 +276,17 @@ void loop(){
         for(j = 0; j < rpmLength; j++){
            leds.setPixelColor(j + rpmStart, 0);
         }
-        leds.show();
       }
       else {
         for(j = 0; j < rpmLength; j++){
           if(j < rpmRatio*rpmLength){
             int flash = (flashMode / flashDelay) % 2;
             leds.setPixelColor(j + rpmStart, HSBtoRGB(rpmColor,1,1));
+          }
+          else
+            leds.setPixelColor(j + rpmStart, 0);
+          }
         }
-        else
-          leds.setPixelColor(j + rpmStart, 0);
-        }
-      }
     } else {
       for(j = 0; j < rpmLength; j++){
           if(j < rpmRatio*rpmLength){
@@ -299,6 +299,8 @@ void loop(){
     }
 
   // Update the led changes just made
+    Serial.println("RPM");
+    Serial.println(rpm);
     leds.show();
     
   // Update all CAN outputs
