@@ -95,7 +95,7 @@ void loop(){
   }
   
   // DEMO mode
-  if ((mode == 5) && (tractionControl == 5)){
+  if ((mode == 6) && (tractionControl == 6)){
     if (temp_dir) {
       temp_counter += 20;
     }
