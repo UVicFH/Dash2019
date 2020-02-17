@@ -167,14 +167,7 @@ void loop(){
         amsStatus = (incomingMessageData[1] & 0b00001000) >> 3;
         imdStatus = (incomingMessageData[1] & 0b00010000) >> 4;
         launchActivated = (incomingMessageData[1] & 0b00100000) >> 5;
-
-      }
-
-      // Store things sent from Microsquirt (1)
-      if(incomingMessageId == canInputIdRPM){
-
-        // Process the message into the global input variables
-        rpm = incomingMessageData[6] << 8 |incomingMessageData[7];
+        rpm = incomingMessageData[3] << 8 |incomingMessageData[2];
 
       }
 
